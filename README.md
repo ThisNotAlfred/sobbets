@@ -1,2 +1,2 @@
-# netcrab
-small netcat in rust
+# cruxy
+educational mini project for socket programming
