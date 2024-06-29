@@ -1,25 +1,40 @@
 use std::{
-    io,
-    net::{IpAddr, Ipv4Addr, SocketAddr, UdpSocket},
+    io::{self, Read, Write},
+    net::{Shutdown, TcpListener, TcpStream},
+    process::exit,
 };
 
-use nix::sys::socket::{listen, Backlog};
+fn main() -> io::Result<()> {
+    let socket = TcpListener::bind("127.0.0.1:5555")?;
 
-fn main() -> Result<(), io::Error> {
-    let socket_addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080);
+    for connection in socket.incoming() {
+        match connection {
+            Ok(stream) => std::thread::spawn(|| {
+                handle_connection(stream).expect("handling connection failed");
+            }),
 
-    let socket = UdpSocket::bind(&socket_addr)?;
-    let backlog = Backlog::new(1)?;
-
-    listen(&socket, backlog)?;
-
-    let mut buf = [0; 1024];
-    loop {
-        match socket.recv(&mut buf) {
-            Ok(received) => println!("{} recieved.\nmesseage:\n{:?}", received, &buf[..received]),
-            Err(_) => break,
-        }
+            Err(err) => {
+                eprintln!("error is {err}");
+                exit(-1);
+            }
+        };
     }
+
+    Ok(())
+}
+
+fn handle_connection(mut client_socket: TcpStream) -> io::Result<()> {
+    let mut buf = [0; 1024];
+    if let Ok(received) = client_socket.read(&mut buf) {
+        println!(
+            "read {received} characters.\n\n{:?}\n",
+            String::from_utf8_lossy(&buf[..received])
+        );
+    }
+
+    client_socket.write_all("hello!".as_bytes())?;
+
+    client_socket.shutdown(Shutdown::Both)?;
 
     Ok(())
 }
