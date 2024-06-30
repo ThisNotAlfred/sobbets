@@ -18,7 +18,7 @@ main(int argc, char* argv[]) -> int
         exit(-1);
     }
 
-    // creting a udp6 socket
+    // creting a udp socket
     auto hints        = addrinfo {};
     hints.ai_family   = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
