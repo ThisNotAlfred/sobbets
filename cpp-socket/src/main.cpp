@@ -38,31 +38,30 @@ main(int argc, char* argv[]) -> int
     for (auto& servinfo = servinfos[0]; servinfo != nullptr; servinfo = servinfo->ai_next) {
         auto sockfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
         if (sockfd == -1) {
-            std::print(stderr, "socket {} didn't work.\n", servinfo->ai_addr->sa_data);
+            std::print(stderr, "address info didn't work. trying next one...\n");
             continue;
         }
 
         // binding to the socket to read from it
         if (connect(sockfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
-            std::print(stderr, "couldn't connect to the address {}\n", servinfo->ai_addr->sa_data);
+            std::print(stderr, "couldn't connect to the socket\n");
             close(sockfd);
             continue;
         }
 
         // sending packet "HELLO!" to each working socket
-        auto sent = write(sockfd, "HELLO!", 6);
+        auto sent = write(sockfd, "HELLO!\n", 7);
         if (sent == -1) {
-            std::print(stderr, "failed to write to socket {}\n", servinfo->ai_addr->sa_data);
+            std::print(stderr, "failed to write to socket\n");
             close(sockfd);
             continue;
         }
 
         // pre-allocating buffer for reading from the socket
         auto buffer     = std::array<char, 1024> {};
-        // NOTE: AH YES 6 ARGUMENTS. CLASSIC!
         auto read_bytes = read(sockfd, buffer.data(), buffer.size());
         if (read_bytes == -1) {
-            std::print(stderr, "reading from {} failed!\n", servinfo->ai_addr->sa_data);
+            std::print(stderr, "reading from socket failed!\n");
             close(sockfd);
             continue;
         }
