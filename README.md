@@ -1,2 +1,2 @@
-# cruxy
-educational mini project for socket programming
+# sobbets
+mini project for learning socket programming
