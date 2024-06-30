@@ -1,0 +1,17 @@
+Diagnostics:
+  UnusedIncludes: None
+  ClangTidy:
+    Add: [modernize*, performance*, readability*, bugprone*]
+    Remove:
+      [
+        android*,
+        readability-magic-numbers,
+        bugprone-easily-swappable-parameters,
+      ]
+InlayHints:
+  BlockEnd: No
+  Designators: Yes
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  TypeNameLimit: 24
