@@ -25,12 +25,11 @@ fn main() -> io::Result<()> {
 
 fn handle_connection(mut client_socket: TcpStream) -> io::Result<()> {
     let mut buf = [0; 1024];
-    if let Ok(received) = client_socket.read(&mut buf) {
-        println!(
-            "read {received} characters.\n\n{:?}\n",
-            String::from_utf8_lossy(&buf[..received])
-        );
-    }
+    let received = client_socket.read(&mut buf)?;
+    println!(
+        "read {received} characters.\n\n{:?}\n",
+        String::from_utf8_lossy(&buf[..received])
+    );
 
     client_socket.write_all("hello!".as_bytes())?;
 
