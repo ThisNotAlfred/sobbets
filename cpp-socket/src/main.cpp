@@ -25,7 +25,7 @@ main(int argc, char* argv[]) -> int
 
     // getting `addrinfo`s and putting them inside the `servinfos`
     auto servinfos = std::array<addrinfo*, 1> { nullptr };
-    int result     = getaddrinfo(argv[1], argv[2], &hints, servinfos.data());
+    auto result    = getaddrinfo(argv[1], argv[2], &hints, servinfos.data());
     if (result != 0) {
         std::print(stderr,
                    "I HATE MANUAL MEMORY MANAGEMENT. GIMME RUST BACK!. BTW THE ERROR WAS: {}\n",
@@ -70,6 +70,8 @@ main(int argc, char* argv[]) -> int
         std::print("{}", buffer.data());
         // and close the socket at the end
         close(sockfd);
+        // and freeing the addrinfo
+        freeaddrinfo(servinfo);
     }
 
     return 0;
