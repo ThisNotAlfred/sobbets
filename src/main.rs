@@ -1,10 +1,10 @@
 use std::{
-    io::{self, Read, Write},
+    io::{Result, Read, Write},
     net::{Shutdown, TcpListener, TcpStream},
     process::exit,
 };
 
-fn main() -> io::Result<()> {
+fn main() -> Result<()> {
     let socket = TcpListener::bind("127.0.0.1:5555")?;
 
     for connection in socket.incoming() {
@@ -23,15 +23,16 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_connection(mut client_socket: TcpStream) -> io::Result<()> {
+fn handle_connection(mut client_socket: TcpStream) -> Result<()> {
     let mut buf = [0; 1024];
-    let received = client_socket.read(&mut buf)?;
-    println!(
-        "read {received} characters.\n\n{:?}\n",
-        String::from_utf8_lossy(&buf[..received])
-    );
+    while let Ok(received) = client_socket.read(&mut buf) {
+        println!(
+            "read {received} characters.\n\n{:?}\n",
+            String::from_utf8_lossy(&buf[..received])
+        );
 
-    client_socket.write_all("hello!".as_bytes())?;
+        client_socket.write_all("received".as_bytes())?;
+    }
 
     client_socket.shutdown(Shutdown::Both)?;
 
