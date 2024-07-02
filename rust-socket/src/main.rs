@@ -1,5 +1,5 @@
 use std::{
-    io::{Result, Read, Write},
+    io::{Read, Result, Write},
     net::{Shutdown, TcpListener, TcpStream},
     process::exit,
 };
@@ -27,7 +27,7 @@ fn handle_connection(mut client_socket: TcpStream) -> Result<()> {
     let mut buf = [0; 1024];
     while let Ok(received) = client_socket.read(&mut buf) {
         println!(
-            "read {received} characters.\n\n{:?}\n",
+            "read {received} characters.\n\n{}\n",
             String::from_utf8_lossy(&buf[..received])
         );
 
